@@ -5,17 +5,22 @@ on:
     branches:
       - source # default branch
 
+env:
+  THEME_REPO: theme-next/hexo-theme-next
+  THEME_BRANCH: master
+  THEME_NAME: next
+
 jobs:
   pages:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Checkout submodules
-        run: |
-          cd main
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+      - name: Checkout theme repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.THEME_REPO }}
+          ref: ${{ env.THEME_BRANCH }}
+          path: themes/${{ env.THEME_NAME }}
       - name: Use Node.js 12.x
         uses: actions/setup-node@v1
         with:
